@@ -152,34 +152,6 @@
             margin-bottom: 20px;
         }
         
-        .exit-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .exit-content {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 90%;
-            animation: shake 0.3s infinite;
-        }
-        
-        .exit-text {
-            font-size: 2em;
-            color: #ff4d7e;
-            margin-bottom: 20px;
-        }
-        
         .heart {
             position: absolute;
             font-size: 2em;
@@ -290,12 +262,12 @@
                 margin: 5px 0;
             }
             
-            .plead-content, .exit-content {
+            .plead-content {
                 padding: 20px;
                 margin: 10px;
             }
             
-            .plead-text, .exit-text {
+            .plead-text {
                 font-size: 1.5em;
             }
             
@@ -321,9 +293,26 @@
                 height: 120px;
             }
         }
+
+        /* 加载动画 */
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
     </style>
 </head>
 <body>
+    <!-- 加载动画 -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div style="color: white; font-size: 1.5em; text-align: center;">
+            <div>💕 加载中 💕</div>
+        </div>
+    </div>
+
     <!-- 音乐播放器 -->
     <div class="music-player">
         <button class="music-btn" onclick="toggleMusic()">🎵</button>
@@ -361,20 +350,7 @@
         </div>
     </div>
 
-    <!-- 退出阻止弹窗 -->
-    <div class="exit-modal" id="exitModal">
-        <div class="exit-content">
-            <div class="exit-text">😢 别走嘛，先原谅我好不好？</div>
-            <div style="margin: 20px 0; font-size: 1.2em; color: #666;">
-                不原谅我可不能走哦～
-            </div>
-            <button class="btn btn-forgive" onclick="closeExitModal()">好的，原谅你</button>
-        </div>
-    </div>
-
     <script>
-        let isForgiven = false;
-        
         // 创建爱心和花朵
         function createHearts() {
             for (let i = 0; i < 20; i++) {
@@ -406,14 +382,9 @@
         
         // 原谅我功能
         function forgiveMe() {
-            isForgiven = true;
             alert('谢谢你原谅我，聂梦雯！💖 我保证会做得更好！');
             createHearts();
             createFlowers();
-            
-            // 移除退出阻止
-            window.removeEventListener('beforeunload', preventExit);
-            window.removeEventListener('popstate', preventBack);
         }
         
         // 不原谅我功能
@@ -432,39 +403,6 @@
             const modal = document.getElementById('pleadModal');
             modal.style.display = 'none';
             forgiveMe(); // 调用原谅函数
-        }
-        
-        // 关闭退出弹窗
-        function closeExitModal() {
-            const modal = document.getElementById('exitModal');
-            modal.style.display = 'none';
-            forgiveMe(); // 调用原谅函数
-        }
-        
-        // 阻止退出功能
-        function preventExit(event) {
-            if (!isForgiven) {
-                event.preventDefault();
-                event.returnValue = '请先原谅我才能退出哦！';
-                showExitModal();
-                return '请先原谅我才能退出哦！';
-            }
-        }
-        
-        function preventBack() {
-            if (!isForgiven) {
-                history.pushState(null, null, document.URL);
-                showExitModal();
-            }
-        }
-        
-        function showExitModal() {
-            const modal = document.getElementById('exitModal');
-            modal.style.display = 'flex';
-            
-            // 添加一些动画效果
-            createHearts();
-            createFlowers();
         }
         
         // 音乐控制 - 手机端自动播放优化
@@ -587,18 +525,6 @@
             
             // 立即开始预加载图片
             preloadImage();
-            
-            // 设置退出阻止
-            window.addEventListener('beforeunload', preventExit);
-            window.addEventListener('popstate', preventBack);
-            
-            // 阻止右键菜单
-            document.addEventListener('contextmenu', function(e) {
-                if (!isForgiven) {
-                    e.preventDefault();
-                    showExitModal();
-                }
-            });
             
             // 判断是否为手机端
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
