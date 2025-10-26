@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>对不起，我错了</title>
+    <title>给聂梦雯的道歉信</title>
     <style>
         * {
             margin: 0;
@@ -19,26 +19,32 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            position: relative;
         }
         
         .container {
             text-align: center;
             position: relative;
             z-index: 2;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 90%;
         }
         
         .apology-text {
-            font-size: 3em;
+            font-size: 2.5em;
             color: #ff4d7e;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             animation: bounce 2s infinite;
         }
         
         .message {
-            font-size: 1.5em;
+            font-size: 1.3em;
             color: #ff6b95;
-            margin: 20px 0;
+            margin: 15px 0;
             opacity: 0;
             animation: fadeIn 1s forwards;
         }
@@ -47,22 +53,106 @@
         .message:nth-child(3) { animation-delay: 2s; }
         .message:nth-child(4) { animation-delay: 3s; }
         
+        .photo-container {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid #ff4d7e;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .our-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: #ff4d7e;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 120px;
+        }
+        
+        .btn-forgive {
+            background: #4CAF50;
+        }
+        
+        .btn-forgive:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+        
+        .btn-refuse {
+            background: #ff4757;
+        }
+        
+        .btn-refuse:hover {
+            background: #ff3742;
+            transform: scale(1.05);
+        }
+        
+        .plead-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .plead-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            animation: shake 0.5s infinite;
+        }
+        
+        .plead-text {
+            font-size: 2em;
+            color: #ff4d7e;
+            margin-bottom: 20px;
+        }
+        
         .heart {
             position: absolute;
             font-size: 2em;
             color: #ff4d7e;
             animation: float 3s ease-in-out infinite;
+            z-index: 1;
         }
         
         .flower {
             position: absolute;
             font-size: 2em;
             animation: rotate 4s linear infinite;
+            z-index: 1;
         }
         
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            50% { transform: translateY(-15px); }
         }
         
         @keyframes fadeIn {
@@ -79,32 +169,83 @@
             to { transform: rotate(360deg); }
         }
         
-        .btn {
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* 音乐播放器样式 */
+        .music-player {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .music-btn {
             background: #ff4d7e;
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.2em;
-            border-radius: 25px;
+            padding: 10px 15px;
+            border-radius: 50%;
             cursor: pointer;
-            margin-top: 30px;
+            font-size: 1.2em;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
             transition: all 0.3s;
         }
-        
-        .btn:hover {
-            background: #ff3366;
+
+        .music-btn:hover {
             transform: scale(1.1);
+            background: #ff3366;
+        }
+
+        .music-btn.playing {
+            background: #4CAF50;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
     </style>
 </head>
 <body>
+    <!-- 音乐播放器 -->
+    <div class="music-player">
+        <button class="music-btn" onclick="toggleMusic()">🎵</button>
+        <audio id="bgMusic" loop>
+            <source src="https://raw.githubusercontent.com/shadaio/apology-to-my-love1/main/romantic-music.mp3" type="audio/mpeg">
+            您的浏览器不支持音频元素。
+        </audio>
+    </div>
+
     <div class="container">
-        <div class="apology-text">💕 对不起，我错了 💕</div>
-        <div class="message">亲爱的，我真的知道错了</div>
+        <div class="apology-text">💕 聂梦雯，对不起，我错了 💕</div>
+        
+        <!-- 合照位置 - 记得替换这里的图片链接 -->
+        <div class="photo-container">
+            <img src="https://github.com/shadaio/apology-to-my-love1/blob/main/photo.jpg?raw=true" alt="我们的合照" class="our-photo" onerror="hidePhoto()">
+        </div>
+        
+        <div class="message">媳妇儿，我真的知道错了</div>
         <div class="message">请你原谅我好不好？</div>
         <div class="message">我保证以后不会再犯了</div>
         <div class="message">我真的很爱你 ❤️</div>
-        <button class="btn" onclick="forgiveMe()">点击原谅我</button>
+        
+        <div class="buttons">
+            <button class="btn btn-forgive" onclick="forgiveMe()">点击原谅我</button>
+            <button class="btn btn-refuse" onclick="plead()">点击不原谅我</button>
+        </div>
+    </div>
+
+    <!-- 求情弹窗 -->
+    <div class="plead-modal" id="pleadModal">
+        <div class="plead-content">
+            <div class="plead-text">😭 求求你了，给个机会嘛 😭</div>
+            <button class="btn btn-forgive" onclick="closePlead()">点击原谅我</button>
+        </div>
     </div>
 
     <script>
@@ -137,17 +278,83 @@
             }
         }
         
+        // 原谅我功能
         function forgiveMe() {
-            alert('谢谢你原谅我！💖 我保证会做得更好！');
+            alert('谢谢你原谅我，聂梦雯！💖 我保证会做得更好！');
             createHearts();
             createFlowers();
+            // 可以在这里添加更多庆祝效果
+        }
+        
+        // 不原谅我功能
+        function plead() {
+            const modal = document.getElementById('pleadModal');
+            modal.style.display = 'flex';
+            // 创建更多爱心和花朵来求情
+            for(let i = 0; i < 10; i++) {
+                createHearts();
+                createFlowers();
+            }
+        }
+        
+        // 关闭求情弹窗
+        function closePlead() {
+            const modal = document.getElementById('pleadModal');
+            modal.style.display = 'none';
+            forgiveMe(); // 调用原谅函数
+        }
+        
+        // 音乐控制
+        function toggleMusic() {
+            const music = document.getElementById('bgMusic');
+            const btn = document.querySelector('.music-btn');
+            
+            if (music.paused) {
+                music.play().then(() => {
+                    btn.classList.add('playing');
+                }).catch(error => {
+                    console.log('播放失败:', error);
+                    alert('请点击页面任意位置后，再播放音乐');
+                });
+            } else {
+                music.pause();
+                btn.classList.remove('playing');
+            }
+        }
+        
+        // 图片加载失败处理
+        function hidePhoto() {
+            const photoContainer = document.querySelector('.photo-container');
+            photoContainer.style.display = 'none';
         }
         
         // 页面加载时创建一些元素
         window.onload = function() {
             createHearts();
             createFlowers();
+            
+            // 用户交互后自动播放音乐
+            document.addEventListener('click', function() {
+                const music = document.getElementById('bgMusic');
+                if (music.paused) {
+                    music.play().then(() => {
+                        document.querySelector('.music-btn').classList.add('playing');
+                    });
+                }
+            }, { once: true }); // 只执行一次
         }
+
+        // 防止右键点击不原谅按钮时关闭弹窗
+        document.getElementById('pleadModal').addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // 阻止弹窗区域外的点击关闭弹窗
+        document.getElementById('pleadModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                e.stopPropagation();
+            }
+        });
     </script>
 </body>
 </html>
