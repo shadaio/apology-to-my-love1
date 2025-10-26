@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>对不起，我错了</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            font-family: 'Microsoft YaHei', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .container {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .apology-text {
+            font-size: 3em;
+            color: #ff4d7e;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: bounce 2s infinite;
+        }
+        
+        .message {
+            font-size: 1.5em;
+            color: #ff6b95;
+            margin: 20px 0;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+        
+        .message:nth-child(2) { animation-delay: 1s; }
+        .message:nth-child(3) { animation-delay: 2s; }
+        .message:nth-child(4) { animation-delay: 3s; }
+        
+        .heart {
+            position: absolute;
+            font-size: 2em;
+            color: #ff4d7e;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .flower {
+            position: absolute;
+            font-size: 2em;
+            animation: rotate 4s linear infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .btn {
+            background: #ff4d7e;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #ff3366;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="apology-text">💕 对不起，我错了 💕</div>
+        <div class="message">亲爱的，我真的知道错了</div>
+        <div class="message">请你原谅我好不好？</div>
+        <div class="message">我保证以后不会再犯了</div>
+        <div class="message">我真的很爱你 ❤️</div>
+        <button class="btn" onclick="forgiveMe()">点击原谅我</button>
+    </div>
+
+    <script>
+        // 创建爱心和花朵
+        function createHearts() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.innerHTML = '❤️';
+                    heart.className = 'heart';
+                    heart.style.left = Math.random() * 100 + 'vw';
+                    heart.style.top = Math.random() * 100 + 'vh';
+                    heart.style.animationDelay = Math.random() * 2 + 's';
+                    document.body.appendChild(heart);
+                }, i * 200);
+            }
+        }
+        
+        function createFlowers() {
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const flower = document.createElement('div');
+                    flower.innerHTML = '🌸';
+                    flower.className = 'flower';
+                    flower.style.left = Math.random() * 100 + 'vw';
+                    flower.style.top = Math.random() * 100 + 'vh';
+                    flower.style.animationDelay = Math.random() * 3 + 's';
+                    document.body.appendChild(flower);
+                }, i * 300);
+            }
+        }
+        
+        function forgiveMe() {
+            alert('谢谢你原谅我！💖 我保证会做得更好！');
+            createHearts();
+            createFlowers();
+        }
+        
+        // 页面加载时创建一些元素
+        window.onload = function() {
+            createHearts();
+            createFlowers();
+        }
+    </script>
+</body>
+</html>
