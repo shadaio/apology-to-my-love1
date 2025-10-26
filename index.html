@@ -67,6 +67,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: opacity 0.5s;
         }
         
         .buttons {
@@ -209,6 +210,68 @@
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
         }
+
+        /* 手机端响应式优化 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .apology-text {
+                font-size: 1.8em;
+            }
+            
+            .message {
+                font-size: 1.1em;
+            }
+            
+            .photo-container {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+                margin: 5px 0;
+            }
+            
+            .plead-content {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .plead-text {
+                font-size: 1.5em;
+            }
+            
+            /* 音乐按钮放大，方便触摸 */
+            .music-btn {
+                padding: 15px;
+                font-size: 1.5em;
+            }
+        }
+
+        /* 超小屏幕优化 */
+        @media (max-width: 480px) {
+            .apology-text {
+                font-size: 1.5em;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .photo-container {
+                width: 120px;
+                height: 120px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -224,9 +287,9 @@
     <div class="container">
         <div class="apology-text">💕 聂梦雯，对不起，我错了 💕</div>
         
-        <!-- 合照位置 - 记得替换这里的图片链接 -->
+        <!-- 合照位置 -->
         <div class="photo-container">
-            <img src="https://raw.githubusercontent.com/shadaio/apology-to-my-love1/main/photo.jpg"我们的合照" class="our-photo" onerror="hidePhoto()">
+            <img src="https://raw.githubusercontent.com/shadaio/apology-to-my-love1/main/photo.jpg" alt="我们的合照" class="our-photo" onerror="hidePhoto()">
         </div>
         
         <div class="message">媳妇儿，我真的知道错了</div>
@@ -283,7 +346,6 @@
             alert('谢谢你原谅我，聂梦雯！💖 我保证会做得更好！');
             createHearts();
             createFlowers();
-            // 可以在这里添加更多庆祝效果
         }
         
         // 不原谅我功能
@@ -304,18 +366,33 @@
             forgiveMe(); // 调用原谅函数
         }
         
-        // 音乐控制
+        // 音乐控制 - 手机端优化版本
         function toggleMusic() {
             const music = document.getElementById('bgMusic');
             const btn = document.querySelector('.music-btn');
             
             if (music.paused) {
-                music.play().then(() => {
-                    btn.classList.add('playing');
-                }).catch(error => {
-                    console.log('播放失败:', error);
-                    alert('请点击页面任意位置后，再播放音乐');
-                });
+                console.log('尝试播放音乐，源文件:', music.querySelector('source').src);
+                
+                // 手机端需要明确的用户交互
+                const playPromise = music.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        btn.classList.add('playing');
+                        console.log('音乐播放成功');
+                    }).catch(error => {
+                        console.log('播放失败:', error);
+                        // 手机端专用提示
+                        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                            alert('请点击"确定"后，再次点击音乐按钮播放');
+                        } else {
+                            alert('请点击页面任意位置后，再播放音乐');
+                        }
+                        // 重新加载音乐
+                        music.load();
+                    });
+                }
             } else {
                 music.pause();
                 btn.classList.remove('playing');
@@ -326,6 +403,47 @@
         function hidePhoto() {
             const photoContainer = document.querySelector('.photo-container');
             photoContainer.style.display = 'none';
+            console.log('图片加载失败，已隐藏图片容器');
+        }
+
+        // 图片加载优化
+        function optimizeImageLoading() {
+            const img = document.querySelector('.our-photo');
+            if (img) {
+                // 添加加载状态
+                img.style.opacity = '0';
+                
+                img.onload = function() {
+                    this.style.opacity = '1';
+                    console.log('手机端图片加载成功');
+                };
+                
+                img.onerror = function() {
+                    console.log('手机端图片加载失败');
+                    hidePhoto();
+                };
+                
+                // 添加时间戳避免缓存
+                const src = img.src;
+                if (src.indexOf('?') === -1) {
+                    img.src = src + '?mobile=' + new Date().getTime();
+                }
+            }
+        }
+
+        // 手机端音频初始化
+        function initMobileAudio() {
+            const music = document.getElementById('bgMusic');
+            
+            // 手机端优化设置
+            music.preload = 'auto';
+            music.volume = 0.6; // 手机端适当音量
+            
+            // 添加触摸支持
+            document.addEventListener('touchstart', function() {
+                // 预加载音频环境
+                music.load();
+            }, { once: true });
         }
         
         // 页面加载时创建一些元素
@@ -333,15 +451,40 @@
             createHearts();
             createFlowers();
             
-            // 用户交互后自动播放音乐
-            document.addEventListener('click', function() {
-                const music = document.getElementById('bgMusic');
-                if (music.paused) {
-                    music.play().then(() => {
-                        document.querySelector('.music-btn').classList.add('playing');
-                    });
+            // 手机端专用初始化
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                initMobileAudio();
+                optimizeImageLoading();
+                console.log('手机端优化已启用');
+            }
+            
+            // 预加载音乐文件
+            const music = document.getElementById('bgMusic');
+            music.load();
+            
+            // 用户交互后尝试播放音乐（手机端需要）
+            document.addEventListener('click', function firstClick() {
+                // 手机端需要明确的用户交互，但不自动播放
+                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                    console.log('手机端用户交互，准备音频环境');
+                    // 只是准备环境，不自动播放
+                    const context = new (window.AudioContext || window.webkitAudioContext)();
+                    context.resume();
+                } else {
+                    // 电脑端可以尝试自动播放
+                    const music = document.getElementById('bgMusic');
+                    if (music.paused) {
+                        music.play().then(() => {
+                            document.querySelector('.music-btn').classList.add('playing');
+                        }).catch(error => {
+                            console.log('电脑端自动播放失败:', error);
+                        });
+                    }
                 }
-            }, { once: true }); // 只执行一次
+                
+                // 移除监听器，只执行一次
+                document.removeEventListener('click', firstClick);
+            });
         }
 
         // 防止右键点击不原谅按钮时关闭弹窗
